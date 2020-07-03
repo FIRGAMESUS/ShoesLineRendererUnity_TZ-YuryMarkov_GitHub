@@ -17,6 +17,7 @@ public class DrawingLines : MonoBehaviour
         lineGeneratorPrefab = GameObject.Find("LineHolder");
         EnumerationCoordsPolygon();
         CornersToList();
+        WriteMeshPoints(coords);
         WriteMeshPoints(corners);
     }
 
