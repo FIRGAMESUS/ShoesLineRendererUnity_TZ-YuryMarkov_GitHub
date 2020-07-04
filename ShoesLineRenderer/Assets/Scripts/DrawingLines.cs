@@ -15,7 +15,7 @@ public class DrawingLines : MonoBehaviour
     float a, b, c, d;
     const float shortSideDefault = 210;
     const float longSideDefault = 297;
-    const float distDefault = 10;
+    const float distDefault = 50;
     float shortSide, longSide;
 
     void Start()
@@ -126,12 +126,50 @@ public class DrawingLines : MonoBehaviour
 
     private void CalculatePlaneABCD(List<Vector3> pointsPlane)
     {
-        Vector3 t1 = pointsPlane[0];
-        Vector3 t2 = pointsPlane[1];
-        Vector3 t3 = pointsPlane[2];
-        a = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
-        b = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
-        c = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
-        d = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
+        Vector3 t1, t2, t3;
+        float a1, b1, c1, d1;
+        t1 = pointsPlane[0];
+        t2 = pointsPlane[1];
+        t3 = pointsPlane[2];
+        a1 = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
+        b1 = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
+        c1 = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
+        d1 = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
+        Debug.Log(a1 + " " + b1 + " " + c1 + " " + d1);
+
+        float a2, b2, c2, d2;
+        t1 = pointsPlane[1];
+        t2 = pointsPlane[2];
+        t3 = pointsPlane[3];
+        a2 = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
+        b2 = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
+        c2 = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
+        d2 = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
+        Debug.Log(a2 + " " + b2 + " " + c2 + " " + d2);
+
+        float a3, b3, c3, d3;
+        t1 = pointsPlane[0];
+        t2 = pointsPlane[2];
+        t3 = pointsPlane[3];
+        a3 = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
+        b3 = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
+        c3 = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
+        d3 = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
+        Debug.Log(a3 + " " + b3 + " " + c3 + " " + d3);
+
+        float a4, b4, c4, d4;
+        t1 = pointsPlane[0];
+        t2 = pointsPlane[1];
+        t3 = pointsPlane[3];
+        a4 = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
+        b4 = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
+        c4 = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
+        d4 = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
+        Debug.Log(a4 + " " + b4 + " " + c4 + " " + d4);
+
+        a = (a1 + a2 + a3 + a4) / 4;
+        b = (b1 + b2 + b3 + b4) / 4;
+        c = (c1 + c2 + c3 + c4) / 4;
+        d = (d1 + d2 + d3 + d4) / 4;
     }
 }
