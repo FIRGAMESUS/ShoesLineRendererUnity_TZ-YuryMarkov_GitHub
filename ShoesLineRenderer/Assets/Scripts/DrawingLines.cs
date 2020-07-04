@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,10 @@ public class DrawingLines : MonoBehaviour
     public List<Vector3> corners;
     public float dist;
     float a, b, c, d;
+    const float shortSideDefault = 210;
+    const float longSideDefault = 297;
+    const float distDefault = 10;
+    float shortSide, longSide;
 
     void Start()
     {
@@ -78,19 +83,42 @@ public class DrawingLines : MonoBehaviour
         corners.Add(new Vector3(3.520846622706104f, -7.299853716696669f, 0.852738011666962f));
         corners.Add(new Vector3(-11.26581889156483f, -2.161200109859713f, 1.420210236748185f));
         corners.Add(new Vector3(-7.721422806121932f, 8.215609420586972f, 0.7073115381738011f));
+        CalculateSides(corners);
+        
+    }
 
-        //int r1
+    private void CalculateSides(List<Vector3> cp)
+    {
+        float shortSide1 = Mathf.Sqrt(Mathf.Pow(cp[0].x - cp[1].x, 2) + Mathf.Pow(cp[0].y - cp[1].y, 2) + Mathf.Pow(cp[0].y - cp[1].y, 2));
+        float shortSide2 = Mathf.Sqrt(Mathf.Pow(cp[2].x - cp[3].x, 2) + Mathf.Pow(cp[2].y - cp[3].y, 2) + Mathf.Pow(cp[2].y - cp[3].y, 2));
+        shortSide = Mathf.Abs((shortSide1 + shortSide2) / 2);
+        Debug.Log(shortSide);
+
+        float longSide1 = Mathf.Sqrt(Mathf.Pow(cp[0].x - cp[3].x, 2) + Mathf.Pow(cp[0].y - cp[3].y, 2) + Mathf.Pow(cp[0].y - cp[3].y, 2));
+        float longtSide2 = Mathf.Sqrt(Mathf.Pow(cp[2].x - cp[1].x, 2) + Mathf.Pow(cp[2].y - cp[1].y, 2) + Mathf.Pow(cp[2].y - cp[1].y, 2));
+        longSide = (longSide1 + longtSide2) / 2;
+        Debug.Log(longSide);
+        CalculateDist();
+    }
+
+    void CalculateDist()
+    {
+        float longRatio = longSideDefault / longSide;
+        float shortRatio = shortSideDefault / shortSide;
+        float averageMultiplier = (longRatio + shortRatio) / 2;
+        Debug.Log(averageMultiplier);
+        dist = distDefault / averageMultiplier;
     }
 
     bool CheckDist(Vector3 p, float dist)
     {
         float numerator = a * p.x + b * p.y + c * p.z + d;
-        float denominator = (float)System.Math.Sqrt(a * a + b * b + c * c);
+        float denominator = Mathf.Sqrt(a * a + b * b + c * c);
         if (numerator < 0)
         {
-            numerator = System.Math.Abs(numerator);
+            numerator = Mathf.Abs(numerator);
             float r = (numerator / denominator);
-            if (System.Math.Abs(r - dist) <= dist * 0.01f) return true;
+            if (Mathf.Abs(r - dist) <= dist * 0.01f) return true;
             else return false;
         }
         else return false;
@@ -98,9 +126,9 @@ public class DrawingLines : MonoBehaviour
 
     private void CalculatePlaneABCD(List<Vector3> pointsPlane)
     {
-        Vector3 t1 = pointsPlane[1];
-        Vector3 t2 = pointsPlane[2];
-        Vector3 t3 = pointsPlane[3];
+        Vector3 t1 = pointsPlane[0];
+        Vector3 t2 = pointsPlane[1];
+        Vector3 t3 = pointsPlane[2];
         a = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
         b = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
         c = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
