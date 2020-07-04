@@ -11,12 +11,16 @@ public class DrawingLines : MonoBehaviour
     public List<Vector3> coords;
     public List<Vector3> corners;
     public float dist;
+    float a, b, c, d;
 
     void Start()
     {
-        dist = 0.5f;
+        dist = 2f;
         model = GameObject.Find("result");
         lineGeneratorPrefab = GameObject.Find("LineHolder");
+        SetCorners();
+        CalculatePlaneABCD(corners);
+
         EnumerationCoordsPolygon();
         WriteMeshPoints(corners);
 
@@ -30,18 +34,18 @@ public class DrawingLines : MonoBehaviour
 
     void EnumerationCoordsPolygon()
     {
-        CornersToList();
         Mesh mesh = model.transform.GetChild(0).GetComponent<MeshFilter>().mesh;
         Vector3[] verts = mesh.vertices;
         int[] triangles = mesh.triangles;
+        //Debug.Log(verts.Length);
         int step = 1;
-        for (int i = 0; i < triangles.Length; i += step)
+        for (int i = 0; i < verts.Length; i += step)
         {
-            Vector3 v = verts[triangles[i]];
-            if (CheckDist(corners, v, dist))
+            Vector3 v = verts[i];
+            if (CheckDist(v, dist))
             {
                 coords.Add(v);
-                Debug.Log(v);
+                //Debug.Log(v);
             }
         }
 
@@ -51,8 +55,6 @@ public class DrawingLines : MonoBehaviour
     void WriteMeshPoints(List<Vector3> points)
     {
         GameObject newLineGen = Instantiate(lineGeneratorPrefab);
-        //newLineGen.transform.SetPositionAndRotation(model.transform.position, model.transform.rotation);
-        //newLineGen.transform.localScale = model.transform.localScale;
         LineRenderer lRend = newLineGen.GetComponent<LineRenderer>();
         lRend.positionCount = points.Count;
         for (int i = 0; i < points.Count; i++)
@@ -62,7 +64,7 @@ public class DrawingLines : MonoBehaviour
         }
     }
 
-    void CornersToList()
+    void SetCorners()
     {
         /*
         temp 0 0 0
@@ -77,23 +79,31 @@ public class DrawingLines : MonoBehaviour
         corners.Add(new Vector3(-11.26581889156483f, -2.161200109859713f, 1.420210236748185f));
         corners.Add(new Vector3(-7.721422806121932f, 8.215609420586972f, 0.7073115381738011f));
 
+        //int r1
     }
 
-    bool CheckDist(List<Vector3> pointsPlane, Vector3 p, float dist)
+    bool CheckDist(Vector3 p, float dist)
     {
-        Vector3 t1 = pointsPlane[0];
-        Vector3 t2 = pointsPlane[1];
-        Vector3 t3 = pointsPlane[2];
-        float a = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
-        float b = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
-        float c = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t2.x * (t1.y - t2.y);
-        float d = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
-
         float numerator = a * p.x + b * p.y + c * p.z + d;
-        float denominator = (float)System.Math.Sqrt(a*a + b*b + c*c);
-        float r = (numerator / denominator);
-
-        if (System.Math.Abs(r - dist) <= dist * 0.5f) return true;
+        float denominator = (float)System.Math.Sqrt(a * a + b * b + c * c);
+        if (numerator < 0)
+        {
+            numerator = System.Math.Abs(numerator);
+            float r = (numerator / denominator);
+            if (System.Math.Abs(r - dist) <= dist * 0.01f) return true;
+            else return false;
+        }
         else return false;
+    }
+
+    private void CalculatePlaneABCD(List<Vector3> pointsPlane)
+    {
+        Vector3 t1 = pointsPlane[1];
+        Vector3 t2 = pointsPlane[2];
+        Vector3 t3 = pointsPlane[3];
+        a = t1.y * (t2.z - t3.z) + t2.y * (t3.z - t1.z) + t3.y * (t1.z - t2.z);
+        b = t1.z * (t2.x - t3.x) + t2.z * (t3.x - t1.x) + t3.z * (t1.x - t2.x);
+        c = t1.x * (t2.y - t3.y) + t2.x * (t3.y - t1.y) + t3.x * (t1.y - t2.y);
+        d = -1 * (t1.x * (t2.y * t3.z - t3.y * t2.z) + t2.x * (t3.y * t1.z - t1.y * t3.z) + t3.x * (t1.y * t2.z - t2.y * t1.z));
     }
 }
