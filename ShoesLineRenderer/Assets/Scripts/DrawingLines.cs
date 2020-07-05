@@ -17,6 +17,7 @@ public class DrawingLines : MonoBehaviour
     const float longSideDefault = 297;
     const float distDefault = 10;
     float shortSide, longSide;
+    Vector3 center;
 
     void Start()
     {
@@ -27,7 +28,7 @@ public class DrawingLines : MonoBehaviour
         CalculatePlaneABCD(corners);
 
         EnumerationCoordsPolygon();
-        WriteMeshPoints(corners);
+        //WriteMeshPoints(corners);
 
     }
 
@@ -47,7 +48,7 @@ public class DrawingLines : MonoBehaviour
         for (int i = 0; i < verts.Length; i += step)
         {
             Vector3 v = verts[i];
-            if (CheckDist(v, dist))
+            if (CheckDist(v, dist) && CheckZonePlane(v))
             {
                 coords.Add(v);
                 //Debug.Log(v);
@@ -84,7 +85,7 @@ public class DrawingLines : MonoBehaviour
         corners.Add(new Vector3(-11.26581889156483f, -2.161200109859713f, 1.420210236748185f));
         corners.Add(new Vector3(-7.721422806121932f, 8.215609420586972f, 0.7073115381738011f));
         CalculateSides(corners);
-        
+        CalculateCenterPlane(corners);
     }
 
     private void CalculateSides(List<Vector3> cp)
@@ -118,7 +119,7 @@ public class DrawingLines : MonoBehaviour
         {
             numerator = Mathf.Abs(numerator);
             float r = (numerator / denominator);
-            if (Mathf.Abs(r - dist) <= dist * 0.01f) return true;
+            if (Mathf.Abs(r - dist) <= dist * 0.05f) return true;
             else return false;
         }
         else return false;
@@ -171,5 +172,25 @@ public class DrawingLines : MonoBehaviour
         b = (b1 + b2 + b3 + b4) / 4;
         c = (c1 + c2 + c3 + c4) / 4;
         d = (d1 + d2 + d3 + d4) / 4;
+    }
+    
+    void CalculateCenterPlane(List<Vector3> pointsPlane)
+    {
+        Vector3 center1 = (pointsPlane[0] + pointsPlane[2]) / 2;
+        Vector3 center2 = (pointsPlane[1] + pointsPlane[3]) / 2;
+        center = (center1 + center2) / 2;
+
+    }
+
+    bool CheckZonePlane(Vector3 point)
+    {
+        float distFromCenter = Mathf.Sqrt(Mathf.Pow(point.x - center.x, 2)
+            + Mathf.Pow(point.y - center.y, 2)
+            + Mathf.Pow(point.z - center.z, 2));
+        float rad = Mathf.Sqrt(Mathf.Pow(corners[0].x - center.x, 2)
+            + Mathf.Pow(corners[0].y - center.y, 2)
+            + Mathf.Pow(corners[0].z - center.z, 2));
+        if (distFromCenter < rad * 1.1f) return true;
+        else return false;
     }
 }
